@@ -1,0 +1,29 @@
+- name: 本地创建创建etcd_ssl_path
+  file:
+    path: "{{ etcd_ssl_path }}"
+    state: directory
+    directory_mode: 755
+
+- name: 复制etcd-ca*.json到本地目标文件夹
+  copy:
+    src: files/{{ item }}
+    dest: "{{ etcd_ssl_path }}"
+  with_items:
+    - "{{ ca_config_json }}"
+    - "{{ etcd_ca_csr_json }}"
+    - "{{ etcd_csr_json }}"
+
+- name: 本地生成etcd-ca
+  shell: |
+    :;{{ cfssl_path }}/cfssl gencert -initca {{ etcd_ca_csr_json }} | {{ cfssl_path }}/cfssljson -bare {{ etcd_ca }};
+     {{ cfssl_path }}/cfssl gencert \
+      -ca={{ etcd_ca }}.pem \
+      -ca-key={{ etcd_ca }}-key.pem \
+      -config={{ ca_config_json }} \
+      -hostname=127.0.0.1,{% for host in groups['Master'] %}{{ hostvars[host].ansible_default_ipv4.address }}{% if not loop.last %},{% endif %}{% endfor %} \
+      -profile=kubernetes \
+      etcd-csr.json | {{ cfssl_path }}/cfssljson -bare etcd;
+     /bin/rm -f *.json *.csr
+  args:
+    chdir: "{{ etcd_ssl_path }}"
+

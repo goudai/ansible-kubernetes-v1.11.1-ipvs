@@ -1,0 +1,11 @@
+- name: 创建yml存放目录
+  file:
+    path: "{{ kubernetes_path }}/Extra"
+    state: directory
+  when: inventory_hostname == 'localhost'
+
+- include: Dashboard.yml
+  when: inventory_hostname == 'localhost'
+
+- include: Heapster.yml
+  when: inventory_hostname == 'localhost'

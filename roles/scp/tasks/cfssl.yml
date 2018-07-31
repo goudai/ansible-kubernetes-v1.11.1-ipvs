@@ -1,0 +1,14 @@
+- name: 创建cfssl相关目录
+  file:
+    path: "{{ cfssl_path }}"
+    state: directory
+    directory_mode: 755
+
+- name: 设置cfssl(并改名)
+  copy:
+    src: files/{{ item.src }}
+    dest: "{{ cfssl_path }}/{{ item.dest }}"
+    mode: u+x
+  with_items:
+    - { src: "{{ cfssljson_file }}", dest: 'cfssljson' }
+    - { src: "{{ cfssl_file }}", dest: 'cfssl' }

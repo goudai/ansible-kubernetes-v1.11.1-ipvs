@@ -1,0 +1,12 @@
+- include: allscp.yml
+
+- name: 分发kubectl到Master
+  copy:
+    src: files/kubectl
+    dest: "{{ kubectl_path }}"
+    directory_mode: 755
+    mode: u+x
+  when: inventory_hostname in groups['Master']
+
+- include: cfssl.yml
+  when: inventory_hostname == 'localhost'

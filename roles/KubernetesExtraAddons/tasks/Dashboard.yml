@@ -1,0 +1,21 @@
+- name: 分发Dashboard相关文件
+  copy:
+    src: files/{{ item.src }}
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: 'kubernetes-dashboard.yaml.conf', dest: "{{ kubernetes_path }}/Extra/kubernetes-dashboard.yaml.conf" }
+    - { src: 'getToken.sh', dest: '/root/getToken.sh' }
+    - { src: 'openApi-ClusterRoleBinding.yml.conf', dest: "{{ kubernetes_path }}/Extra/openApi-ClusterRoleBinding.yml.conf" }
+
+
+- name: 生成Dashboard指导
+  shell: |
+    :;{{ kubectl_path }}/kubectl apply -f {{ kubernetes_path }}/Extra/kubernetes-dashboard.yaml.conf;
+    {{ kubectl_path }}/kubectl create -f {{ kubernetes_path }}/Extra/openApi-ClusterRoleBinding.yml.conf;
+    {{ kubectl_path }}/kubectl -n kube-system create sa dashboard;
+    {{ kubectl_path }}/kubectl create clusterrolebinding dashboard --clusterrole cluster-admin --serviceaccount=kube-system:dashboard
+
+
+- name: 生成Dashboard指导
+  shell: |
+    echo "#访问Dashboard地址为{{ KUBE_APISERVER }}/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/node?namespace=default" > /root/Dashboard.txt

@@ -1,0 +1,12 @@
+- name: 分发Heapster相关文件
+  copy:
+    src: files/kube-monitor.yml.conf
+    dest: "{{ kubernetes_path }}/Extra/kube-monitor.yml.conf"
+
+- name: 生成Heapster指导
+  shell: |
+    :;{{ kubectl_path }}/kubectl apply -f {{ kubernetes_path }}/Extra/kube-monitor.yml.conf
+
+- name: 生成Dashboard指导
+  shell: |
+    echo "#访问Heapster地址为{{ KUBE_APISERVER }}/api/v1/namespaces/kube-system/services/monitoring-grafana/proxy/" > /root/Heapster.txt

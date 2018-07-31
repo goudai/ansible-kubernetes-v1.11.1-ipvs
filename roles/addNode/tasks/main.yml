@@ -1,0 +1,2 @@
+- include: addNode.yml
+  when: inventory_hostname in groups['newNode']

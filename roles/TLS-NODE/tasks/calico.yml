@@ -1,0 +1,15 @@
+- name: 渲染calico-rc文件模板
+  template: src={{ item }} dest=~/{{ item.split('.')[:-1]|join('.') }}
+  with_items:
+    - 'calico-rc.j2'
+
+- name: 创建calicoctl_path目录
+  file:
+    path: "{{ calicoctl_path }}"
+    state: directory
+
+- name: 分发calicoctl
+  copy:
+    src: files/calicoctl
+    dest: "{{ calicoctl_path }}"
+    mode: u+x

@@ -1,0 +1,15 @@
+- name: otherMaster创建etcd_ssl_path
+  file:
+    path: "{{ etcd_ssl_path }}"
+    state: directory
+    directory_mode: 755
+
+- name: 分发etcd-ca到otherMaster
+  copy:
+    src: "{{ etcd_ssl_path }}/{{ item }}"
+    dest: "{{ etcd_ssl_path }}"
+  with_items:
+    - "{{ etcd_ca }}-key.pem"
+    - "{{ etcd_ca }}.pem"
+    - 'etcd-key.pem'
+    - 'etcd.pem'

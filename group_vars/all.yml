@@ -1,0 +1,68 @@
+
+ansible_ssh_port: 22
+ansible_ssh_pass: 111111
+
+TOKEN: 'LTbH+UgHnwAISplYVZG/JLuVqTSvztjkgKWcSBA1H5E='
+TOKEN_ID: 8b0217
+TOKEN_SECRET: 1ae7eb487aaeb131
+VIP: '192.168.0.110'
+INTERFACE_NAME: eth0
+NETMASK: '24'
+
+KUBE_APISERVER: "https://{{ VIP }}:6443"
+ServiceClusterIPRange: '10.96.0.0/12'
+KubernetesClusterIP: '10.96.0.1'
+ClusterDns: '10.96.0.10'
+ServiceNodePortRange: 30000-32767
+ETCD_PORT: '2379'
+ETCD_PEER_PORT: '2380'
+ClusterCidr: '10.244.0.0/16'
+
+images_path: /root/images
+# AutoSsh: /usr/local/bin/AutoSsh
+# AutoScp: /usr/local/bin/AutoScp
+
+kubelet_path: /usr/local/bin
+kubectl_path: /usr/local/bin
+kubernetes_path: /etc/kubernetes
+kubernetes_pki: "{{ kubernetes_path }}/pki"
+Manifests_path: "{{ kubernetes_path }}/manifests"
+
+kubelete_data_path: /var/lib/kubelet
+kubernetes_log: /var/log/kubernetes
+ca_certs_path: /etc/ssl/certs
+
+haproxy_path: /etc/haproxy
+
+cni_path: /opt/cni/bin
+cni_tar: cni-plugins-amd64-v0.6.0.tgz
+calicoctl_path: /usr/local/bin
+
+cfssl_path: /usr/local/bin
+cfssl_file: cfssl_linux-amd64
+cfssljson_file: cfssljson_linux-amd64
+
+ca_config_json: ca-config.json
+ca: ca
+ca_csr_json: ca-csr.json
+
+
+etcd_path: /etc/etcd
+etcd_ssl_path: "{{ etcd_path }}/ssl"
+etcd_data_path: /var/lib/etcd
+etcd_ca_csr_json: etcd-ca-csr.json
+etcd_ca: etcd-ca
+etcd_csr_json: etcd-csr.json
+
+apiserver_csr_json: apiserver-csr.json
+front_proxy_ca_csr_json: front-proxy-ca-csr.json
+front_proxy_ca: front-proxy-ca
+front_proxy_client_csr_json: front-proxy-client-csr.json
+admin_csr_json: admin-csr.json
+manager_csr_json: manager-csr.json
+scheduler_csr_json: scheduler-csr.json
+
+kubelet_csr_json: kubelet-csr.json
+
+audit_policy_yml: audit-policy.yml
+encryption_yml: encryption.yml

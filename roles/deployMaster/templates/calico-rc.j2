@@ -1,0 +1,4 @@
+export ETCD_ENDPOINTS="{% for host in groups['Master'] %}https://{{ hostvars[host].ansible_default_ipv4.address }}:{{ ETCD_PORT }}{% if not loop.last %},{% endif %}{% endfor %}"
+export ETCD_CA_CERT_FILE="/etc/etcd/ssl/etcd-ca.pem"
+export ETCD_CERT_FILE="/etc/etcd/ssl/etcd.pem"
+export ETCD_KEY_FILE="/etc/etcd/ssl/etcd-key.pem"

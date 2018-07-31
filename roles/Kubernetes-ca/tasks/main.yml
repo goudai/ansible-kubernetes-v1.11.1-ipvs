@@ -1,0 +1,84 @@
+#  cd /etc/;/bin/rm -rf kubernetes;mkdir -p {{ kubernetes_pki }}删掉/etc/kubernetes/pki防止二次执行
+# - shell: |
+#     cd /etc;/bin/rm -rf kubernetes;
+
+- name: Master分组创建Kubernetes pki目录
+  file:
+    path: "{{ item }}"
+    state: directory
+    directory_mode: 755
+  with_items:
+    - "{{ kubernetes_pki }}"
+    - "{{ kubernetes_path }}"
+  when: inventory_hostname in groups['Master']
+
+
+- name: Local create Kubernetes ca
+  include: ca.yml
+  when: inventory_hostname == 'localhost'
+
+
+- name: 分发Master Kubelet Certificate
+  copy:
+    src: "{{ kubernetes_pki}}/{{ item }}"
+    dest: "{{ kubernetes_pki }}"
+  with_items:
+    - "kubelet-{{ ansible_hostname }}-key.pem"
+    - "kubelet-{{ ansible_hostname }}.pem"
+    - "{{ ca }}.pem"
+  when: inventory_hostname in groups['otherMaster']
+
+
+#  AutoScp password src_file dest_file port
+#  AutoSsh password dest_ip port command
+- name: 生成kubelet.conf的 kubeconfig
+  shell: |
+    :;{{ kubectl_path }}/kubectl config set-cluster kubernetes \
+      --certificate-authority={{ ca }}.pem \
+      --embed-certs=true \
+      --server={{ KUBE_APISERVER }} \
+      --kubeconfig=../kubelet.conf;sleep 1;
+    {{ kubectl_path }}/kubectl config set-credentials system:node:{{ ansible_hostname }} \
+      --client-certificate=kubelet-{{ ansible_hostname }}.pem \
+      --client-key=kubelet-{{ ansible_hostname }}-key.pem \
+      --embed-certs=true \
+      --kubeconfig=../kubelet.conf;sleep 1;
+    {{ kubectl_path }}/kubectl config set-context system:node:{{ ansible_hostname }}@kubernetes \
+      --cluster=kubernetes \
+      --user=system:node:{{ ansible_hostname }} \
+      --kubeconfig=../kubelet.conf;sleep 1;
+    {{ kubectl_path }}/kubectl config use-context system:node:{{ ansible_hostname }}@kubernetes \
+      --kubeconfig=../kubelet.conf;sleep 1;
+    sed -ri '/^current-context/s#:.+$#: system:node:'{{ ansible_hostname }}'@kubernetes#' ../kubelet.conf;
+    rm kubelet-{{ ansible_hostname }}.pem kubelet-{{ ansible_hostname }}-key.pem
+  args:
+    chdir: "{{ kubernetes_pki }}"
+  when: inventory_hostname in groups['Master']
+
+- name: 生成Service Account Key
+  shell: |
+    openssl genrsa -out sa.key 2048;
+    openssl rsa -in sa.key -pubout -out sa.pub;
+    rm -rf *.json *.csr scheduler*.pem controller-manager*.pem admin*.pem kubelet*.pem;
+  args:
+    chdir: "{{ kubernetes_pki }}"
+  when: inventory_hostname == 'localhost'
+
+
+- name: 复制凭证到其他master节点
+  copy:
+    src: "{{ item }}"
+    dest: "{{ kubernetes_pki }}"
+  with_fileglob:
+    - "{{ kubernetes_pki }}/*"
+  when: inventory_hostname in groups['Master']
+
+- name: 复制Kubernetes config到其他master节点
+  copy:
+    src: "{{ kubernetes_path }}/{{ item }}"
+    dest: "{{ kubernetes_path }}"
+  with_items:
+    - 'admin.conf'
+    - 'controller-manager.conf'
+    - 'scheduler.conf'
+  when: inventory_hostname in groups['Master']

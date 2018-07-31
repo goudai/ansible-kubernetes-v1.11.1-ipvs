@@ -1,0 +1,22 @@
+- name: 创建kubelet_path,cni_path dir
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ kubelet_path }}"
+    - "{{ cni_path }}"
+
+
+- name: 分发kubelet
+  copy:
+    src: files/kubelet
+    dest: "{{ kubelet_path }}"
+    directory_mode: 755
+    mode: u+x
+
+- name: 分发cni
+  unarchive:
+    src: files/{{ cni_tar }}
+    dest: "{{ cni_path }}"
+    mode: u+x
+

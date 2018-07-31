@@ -1,0 +1,6 @@
+- include: TLS.yml
+  when: inventory_hostname == 'localhost'
+
+- include: Node.yml
+  when: inventory_hostname in groups['Node']
+

@@ -1,0 +1,52 @@
+-  file:
+    path: "{{ kubernetes_path }}/temp"
+    state: directory
+
+- copy:
+    src: files/{{ item }}
+    dest: "{{ kubernetes_path }}/temp"
+  with_items:
+    - 'apiserver-to-kubelet-rbac.yml.conf'
+    - 'kubelet-bootstrap-rbac.yml.conf'
+
+- name: 设置Master节点
+  shell: |
+    :;{{ kubectl_path }}/kubectl apply -f temp/apiserver-to-kubelet-rbac.yml.conf;sleep 3;
+    {{ kubectl_path }}/kubectl taint nodes node-role.kubernetes.io/master="":NoSchedule --all;
+  args:
+    chdir: "{{ kubernetes_path }}"
+
+- name:  生成bootstrap-kubelet.conf的 Kubernetes config文件
+  shell: |
+    :;{{ kubectl_path }}/kubectl config set-cluster kubernetes \
+      --certificate-authority={{ ca }}.pem \
+      --embed-certs=true \
+      --server={{ KUBE_APISERVER }} \
+      --kubeconfig=../bootstrap-kubelet.conf;sleep 1;
+    {{ kubectl_path }}/kubectl config set-credentials tls-bootstrap-token-user \
+      --token={{ TOKEN_ID }}.{{ TOKEN_SECRET }} \
+      --kubeconfig=../bootstrap-kubelet.conf;sleep 1;
+    {{ kubectl_path }}/kubectl config set-context tls-bootstrap-token-user@kubernetes \
+      --cluster=kubernetes \
+      --user=tls-bootstrap-token-user \
+      --kubeconfig=../bootstrap-kubelet.conf;sleep 1;
+    {{ kubectl_path }}/kubectl config use-context tls-bootstrap-token-user@kubernetes \
+      --kubeconfig=../bootstrap-kubelet.conf;sleep 1;
+  args:
+    chdir: "{{ kubernetes_pki }}"
+
+- name: 渲染bootstrap secret文件模板
+  template: src={{ item.src }} dest={{ item.dest }}/{{ item.src.split('.')[:-1]|join('.') }}
+  with_items:
+    - { src: 'bootstrap-token-Secret.yml.conf.j2', dest: "{{ kubernetes_path }}/temp" }
+
+
+- name: 建立TLS bootstrap secret来提供自动签证使用并建立TLS Bootstrap Autoapprove RBAC
+  shell: |
+    :;{{ kubectl_path }}/kubectl create -f temp/bootstrap-token-Secret.yml.conf;sleep 3;
+    {{ kubectl_path }}/kubectl    apply -f temp/kubelet-bootstrap-rbac.yml.conf;
+  args:
+    chdir: "{{ kubernetes_path }}"
+
+
+

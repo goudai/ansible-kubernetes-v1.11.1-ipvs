@@ -1,0 +1,156 @@
+- name: 复制*.json到本地目标文件夹
+  copy:
+    src: files/{{ item }}
+    dest: "{{ kubernetes_pki }}"
+  with_items:
+    - "{{ ca_config_json }}"
+    - "{{ ca_csr_json }}"
+    - "{{ apiserver_csr_json }}"
+    - "{{ front_proxy_ca_csr_json }}"
+    - "{{ front_proxy_client_csr_json }}"
+    - "{{ admin_csr_json }}"
+    - "{{ manager_csr_json }}"
+    - "{{ scheduler_csr_json }}"
+    - "{{ kubelet_csr_json }}"
+
+- name: 生成API Server Certificate
+  shell: |
+    "{{ cfssl_path }}/cfssl" gencert -initca {{ ca_csr_json }} | {{ cfssl_path }}/cfssljson -bare {{ ca }};
+    {{ cfssl_path }}/cfssl gencert \
+      -ca={{ ca }}.pem \
+      -ca-key={{ ca }}-key.pem \
+      -config={{ ca_config_json }} \
+      -hostname={{ KubernetesClusterIP }},{{ VIP }},127.0.0.1,kubernetes.default \
+      -profile=kubernetes \
+      {{ apiserver_csr_json }} | {{ cfssl_path }}/cfssljson -bare apiserver
+  args:
+    chdir: "{{ kubernetes_pki }}"
+
+- name: 生成Front Proxy Certificate
+  shell: |
+    "{{ cfssl_path }}/cfssl" gencert \
+      -initca {{ front_proxy_ca_csr_json }} | {{ cfssl_path }}/cfssljson -bare {{ front_proxy_ca }};
+    {{ cfssl_path }}/cfssl gencert \
+      -ca={{ front_proxy_ca }}.pem \
+      -ca-key={{ front_proxy_ca }}-key.pem \
+      -config={{ ca_config_json }} \
+      -profile=kubernetes \
+      {{ front_proxy_client_csr_json }} | {{ cfssl_path }}/cfssljson -bare front-proxy-client
+  args:
+    chdir: "{{ kubernetes_pki }}"
+
+- name: 生成Admin Certificate
+  shell: |
+    "{{ cfssl_path }}/cfssl" gencert \
+      -ca={{ ca }}.pem \
+      -ca-key={{ ca }}-key.pem \
+      -config={{ ca_config_json }} \
+      -profile=kubernetes \
+      {{ admin_csr_json }} | {{ cfssl_path }}/cfssljson -bare admin
+  args:
+    chdir: "{{ kubernetes_pki }}"
+
+- name: 生成admin.conf的kubeconfig
+  shell: |
+    :;{{ kubectl_path }}/kubectl config set-cluster kubernetes \
+      --certificate-authority={{ ca }}.pem \
+      --embed-certs=true \
+      --server={{ KUBE_APISERVER }} \
+      --kubeconfig=../admin.conf;sleep 1;
+    {{ kubectl_path }}/kubectl config set-credentials kubernetes-admin \
+      --client-certificate=admin.pem \
+      --client-key=admin-key.pem \
+      --embed-certs=true \
+      --kubeconfig=../admin.conf;sleep 1;
+    {{ kubectl_path }}/kubectl config set-context kubernetes-admin@kubernetes \
+      --cluster=kubernetes \
+      --user=kubernetes-admin \
+      --kubeconfig=../admin.conf;sleep 1;
+    {{ kubectl_path }}/kubectl config use-context kubernetes-admin@kubernetes \
+      --kubeconfig=../admin.conf
+  args:
+    chdir: "{{ kubernetes_pki }}"
+
+- name: 生成Controller Manager Certificate
+  shell: |
+    :;{{ cfssl_path }}/cfssl gencert \
+      -ca={{ ca }}.pem \
+      -ca-key={{ ca }}-key.pem \
+      -config={{ ca_config_json }} \
+      -profile=kubernetes \
+      {{ manager_csr_json }} | {{ cfssl_path }}/cfssljson -bare controller-manager
+  args:
+    chdir: "{{ kubernetes_pki }}"
+
+- name: 生成controller-manager.conf 的 kubeconfig
+  shell: |
+    :;{{ kubectl_path }}/kubectl config set-cluster kubernetes \
+      --certificate-authority={{ ca }}.pem \
+      --embed-certs=true \
+      --server={{ KUBE_APISERVER }} \
+      --kubeconfig=../controller-manager.conf;sleep 1;
+    {{ kubectl_path }}/kubectl config set-credentials system:kube-controller-manager \
+      --client-certificate=controller-manager.pem \
+      --client-key=controller-manager-key.pem \
+      --embed-certs=true \
+      --kubeconfig=../controller-manager.conf;sleep 1;
+    {{ kubectl_path }}/kubectl config set-context system:kube-controller-manager@kubernetes \
+      --cluster=kubernetes \
+      --user=system:kube-controller-manager \
+      --kubeconfig=../controller-manager.conf;sleep 1;
+    {{ kubectl_path }}/kubectl config use-context system:kube-controller-manager@kubernetes \
+      --kubeconfig=../controller-manager.conf
+  args:
+    chdir: "{{ kubernetes_pki }}"
+
+- name: 生成Scheduler Certificate
+  shell: |
+    "{{ cfssl_path }}/cfssl" gencert \
+      -ca={{ ca }}.pem \
+      -ca-key={{ ca }}-key.pem \
+      -config={{ ca_config_json }} \
+      -profile=kubernetes \
+      {{ scheduler_csr_json }} | cfssljson -bare scheduler
+  args:
+    chdir: "{{ kubernetes_pki }}"
+
+- name: 生成scheduler.conf 的 kubeconfig
+  shell: |
+    :;{{ kubectl_path }}/kubectl config set-cluster kubernetes \
+      --certificate-authority={{ ca }}.pem \
+      --embed-certs=true \
+      --server={{ KUBE_APISERVER }} \
+      --kubeconfig=../scheduler.conf;sleep 1;
+    {{ kubectl_path }}/kubectl config set-credentials system:kube-scheduler \
+      --client-certificate=scheduler.pem \
+      --client-key=scheduler-key.pem \
+      --embed-certs=true \
+      --kubeconfig=../scheduler.conf;sleep 1;
+    {{ kubectl_path }}/kubectl config set-context system:kube-scheduler@kubernetes \
+      --cluster=kubernetes \
+      --user=system:kube-scheduler \
+      --kubeconfig=../scheduler.conf;sleep 1;
+    {{ kubectl_path }}/kubectl config use-context system:kube-scheduler@kubernetes \
+      --kubeconfig=../scheduler.conf
+  args:
+    chdir: "{{ kubernetes_pki }}"
+
+- name: 生成Master Kubelet Certificate
+##此处变量为hostname
+  shell: |
+    for NODE in {% for host in groups['Master'] %}{{ hostvars[host].ansible_hostname }} {% endfor %}; do
+      cp {{ kubelet_csr_json }} kubelet-$NODE-csr.json;
+      sed -i "s#\$NODE#${NODE}#" kubelet-$NODE-csr.json;
+      {{ cfssl_path }}/cfssl gencert \
+      -ca={{ ca }}.pem \
+      -ca-key={{ ca }}-key.pem \
+      -config={{ ca_config_json }} \
+      -hostname=$NODE \
+      -profile=kubernetes \
+      kubelet-$NODE-csr.json | {{ cfssl_path }}/cfssljson -bare kubelet-$NODE;
+    done
+  args:
+    chdir: "{{ kubernetes_pki }}"
+
+
+

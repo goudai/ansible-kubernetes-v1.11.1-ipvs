@@ -1,0 +1,10 @@
+# 重新安装的话取消这个注释
+# - shell: |
+#     cd /etc; /bin/rm -rf etcd
+#   when: inventory_hostname in groups['Master']
+
+- include: etcd_ca.yml
+  when: inventory_hostname == 'localhost'
+
+- include: copy_to_otherMaster.yml
+  when: inventory_hostname in groups['otherMaster']
