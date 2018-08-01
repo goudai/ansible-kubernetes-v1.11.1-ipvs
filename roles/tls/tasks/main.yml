@@ -1,0 +1,4 @@
+- include: TLS.yml
+  when: inventory_hostname == 'localhost'
+
+

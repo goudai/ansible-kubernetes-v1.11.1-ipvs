@@ -1,2 +1,2 @@
-- include: addNode.yml
-  when: inventory_hostname in groups['newNode']
+- include: doAdd.yml
+  when: inventory_hostname in groups['Node']

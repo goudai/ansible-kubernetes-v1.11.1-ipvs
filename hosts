@@ -9,15 +9,13 @@ otherMaster
 192.168.0.102
 192.168.0.103
 
+# 已添加的host请注释起来
 [Node]
 192.168.0.104
 
-[newNode]
-192.168.0.105
-#192.168.0.11
 
 #如果各台密码和端口不通请按照下面格式填写好并注释掉group_vars/all.yml里的ansible_ssh_pass的那一行
 #[Node]
-#192.168.0.9 ansible_ssh_pass=password ansible_ssh_port=666
-#192.168.0.10 ansible_ssh_pass=password233 ansible_ssh_port=68
+#192.168.0.9 ansible_ssh_pass=password ansible_ssh_port=22
+#192.168.0.10 ansible_ssh_pass=password233 ansible_ssh_port=22
 
