@@ -45,6 +45,7 @@
     - "{{ kubernetes_pki }}/{{ ca }}.pem"
     - "{{ kubernetes_pki }}/{{ ca }}-key.pem"
     - "{{ kubernetes_path }}/bootstrap-kubelet.conf"
+    - "{{ kubernetes_pki }}/front-proxy-ca.pem"
 
 - name: 分发kubelet systemd文件模板到node
   template: src={{ item.src }} dest={{ item.dest }}/{{ item.src.split('.')[:-1]|join('.') }}
