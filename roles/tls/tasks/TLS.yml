@@ -25,7 +25,7 @@
       --kubeconfig=../bootstrap-kubelet.conf;sleep 1;
     {{ kubectl_path }}/kubectl config set-credentials tls-bootstrap-token-user \
       --token={{ TOKEN_ID }}.{{ TOKEN_SECRET }} \
-      --kubeconfig=../c;sleep 1;
+      --kubeconfig=../bootstrap-kubelet.conf;sleep 1;
     {{ kubectl_path }}/kubectl config set-context tls-bootstrap-token-user@kubernetes \
       --cluster=kubernetes \
       --user=tls-bootstrap-token-user \
