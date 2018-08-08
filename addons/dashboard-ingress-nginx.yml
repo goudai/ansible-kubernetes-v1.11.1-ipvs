@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: dashboard-kibana-ingress
+  namespace: kube-system
+spec:
+  rules:
+  - host: dashboard.qingmu.io
+    http:
+      paths:
+      - backend:
+          serviceName: kubernetes-dashboard
+          servicePort: 80
+  - host: nginx.qingmu.io
+    http:
+      paths:
+      - backend:
+          serviceName: nginx-service
+          servicePort: 80
