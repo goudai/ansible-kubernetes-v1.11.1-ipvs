@@ -104,7 +104,7 @@ spec:
       serviceAccountName: flannel
       initContainers:
       - name: install-cni
-        image: quay.io/coreos/flannel:v0.10.0-amd64
+        image: freemanliu/flannel:v0.10.0-amd64
         command:
         - cp
         args:
