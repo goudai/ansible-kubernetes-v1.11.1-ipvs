@@ -6,7 +6,7 @@ metadata:
   name: ingress-nginx
 ---
 
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: default-http-backend
@@ -221,13 +221,12 @@ subjects:
     namespace: ingress-nginx
 ---
 
-apiVersion: extensions/v1beta1
-kind: Deployment
+apiVersion: apps/v1
+kind: DaemonSet
 metadata:
   name: nginx-ingress-controller
   namespace: ingress-nginx
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: ingress-nginx
@@ -240,6 +239,7 @@ spec:
         prometheus.io/scrape: 'true'
     spec:
       serviceAccountName: nginx-ingress-serviceaccount
+      hostNetwork: true
       containers:
         - name: nginx-ingress-controller
           image: freemanliu/nginx-ingress-controller:0.17.1
