@@ -13,7 +13,7 @@ spec:
   containers:
   - name: etcd
 # gcr.io/google_containers
-    image: registry.cn-hangzhou.aliyuncs.com/google_containers/etcd-amd64:3.2.18
+    image: {{ imageRepository }}/etcd-amd64:{{ etcdVersion }}
     command:
     - etcd
     - --config-file={{ etcd_path }}/etcd.config.yml

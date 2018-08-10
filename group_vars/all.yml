@@ -10,18 +10,23 @@ INTERFACE_NAME: eth0
 NETMASK: '24'
 
 KUBE_APISERVER: "https://{{ VIP }}:6443"
-ServiceClusterIPRange: '10.96.0.0/12'
-KubernetesClusterIP: '10.96.0.1'
-ClusterDns: '10.96.0.10'
+# svc 网络 开始ip-> 10.0.0.1 结束ip <-10.7.255.254 一共524286ip
+ServiceClusterIPRange: '10.0.0.0/13'
+KubernetesClusterIP: '10.0.0.1'
+ClusterDns: '10.0.0.2'
 ServiceNodePortRange: 30000-32767
 ETCD_PORT: '2379'
 ETCD_PEER_PORT: '2380'
-ClusterCidr: '10.244.0.0/16'
+# svc 网络 开始ip-> 10.8.0.1 结束ip <-10.15.255.254 一共524286ip
+ClusterCidr: '10.8.0.0/13'
 
 images_path: /root/images
 # AutoSsh: /usr/local/bin/AutoSsh
 # AutoScp: /usr/local/bin/AutoScp
 
+imageRepository: registry.cn-hangzhou.aliyuncs.com/google_containers
+imageVersion: v1.11.1
+etcdVersion: 3.2.18
 kubelet_path: /usr/local/bin
 kubectl_path: /usr/local/bin
 kubernetes_path: /etc/kubernetes

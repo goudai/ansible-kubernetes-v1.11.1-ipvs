@@ -13,11 +13,12 @@ spec:
   containers:
   - name: kube-controller-manager
 # gcr.io/google_containers
-    image: registry.cn-hangzhou.aliyuncs.com/google_containers/kube-controller-manager-amd64:v1.11.1
+    image: {{ imageRepository }}/kube-controller-manager-amd64:{{ imageVersion }}
     command:
       - kube-controller-manager
-      - --v=0
+      - --v=2
       - --logtostderr=true
+      - --horizontal-pod-autoscaler-use-rest-clients=true
       - --address=127.0.0.1
       - --root-ca-file={{ kubernetes_pki }}/{{ ca }}.pem
       - --cluster-signing-cert-file={{ kubernetes_pki }}/{{ ca }}.pem

@@ -12,11 +12,11 @@ spec:
   hostNetwork: true
   containers :
   - name: kube-apiserver
-#  gcr.io/google_containers/kube-apiserver-amd64:v1.11.1
-    image: registry.cn-hangzhou.aliyuncs.com/google_containers/kube-apiserver-amd64:v1.11.1
+#  gcr.io/google_containers/kube-apiserver-amd64:{{ imageVersion }}
+    image: {{ imageRepository }}/kube-apiserver-amd64:{{ imageVersion }}
     command:
       - kube-apiserver
-      - --v=0
+      - --v=2
       - --logtostderr=true
       - --allow-privileged=true
       - --bind-address=0.0.0.0

@@ -13,7 +13,7 @@ spec:
   containers:
   - name: kube-scheduler
 # gcr.io/google_containers
-    image: registry.cn-hangzhou.aliyuncs.com/google_containers/kube-scheduler-amd64:v1.11.1
+    image: {{ imageRepository }}/kube-scheduler-amd64:{{ imageVersion }}
     command:
       - kube-scheduler
       - --v=0
