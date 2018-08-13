@@ -24,8 +24,8 @@ images_path: /root/images
 # AutoSsh: /usr/local/bin/AutoSsh
 # AutoScp: /usr/local/bin/AutoScp
 
-imageRepository: registry.cn-hangzhou.aliyuncs.com/google_containers
-imageVersion: v1.11.1
+imageRepository: freemanliu
+imageVersion: v1.11.2
 etcdVersion: 3.2.18
 kubelet_path: /usr/local/bin
 kubectl_path: /usr/local/bin
