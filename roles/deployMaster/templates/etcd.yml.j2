@@ -24,6 +24,9 @@ spec:
       initialDelaySeconds: 15
       timeoutSeconds: 15
     volumeMounts:
+    - mountPath: /etc/localtime
+      name: host-time
+      readOnly: true
     - mountPath: {{ etcd_ssl_path }}
       name: etcd-certs
     - mountPath: {{ etcd_path }}/etcd.config.yml
@@ -31,6 +34,9 @@ spec:
     - mountPath: {{ etcd_data_path }}
       name: data
   volumes:
+  - hostPath:
+      path: /etc/localtime
+    name: host-time
   - hostPath:
       path: {{ etcd_ssl_path }}
       type: DirectoryOrCreate

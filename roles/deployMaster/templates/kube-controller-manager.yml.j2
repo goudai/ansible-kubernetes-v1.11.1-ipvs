@@ -47,6 +47,9 @@ spec:
       requests:
         cpu: 200m
     volumeMounts:
+    - mountPath: /etc/localtime
+      name: host-time
+      readOnly: true
     - mountPath: {{ kubernetes_pki }}
       name: k8s-certs
       readOnly: true
@@ -59,6 +62,9 @@ spec:
     - mountPath: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
       name: flexvolume-dir
   volumes:
+  - hostPath:
+      path: /etc/localtime
+    name: host-time
   - hostPath:
       path: {{ kubernetes_pki }}
       type: DirectoryOrCreate

@@ -124,6 +124,9 @@ spec:
         securityContext:
           privileged: true
         volumeMounts:
+        - mountPath: /etc/localtime
+          name: host-time
+          readOnly: true
         - mountPath: /var/lib/kube-proxy
           name: kube-proxy
         - mountPath: /run/xtables.lock
@@ -132,6 +135,9 @@ spec:
           name: lib-modules
           readOnly: true
       volumes:
+      - hostPath:
+          path: /etc/localtime
+        name: host-time
       - configMap:
           defaultMode: 420
           name: kube-proxy

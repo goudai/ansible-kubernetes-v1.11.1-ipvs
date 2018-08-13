@@ -34,6 +34,9 @@ spec:
       requests:
         cpu: 100m
     volumeMounts:
+    - mountPath: /etc/localtime
+      name: host-time
+      readOnly: true
     - mountPath: {{ kubernetes_pki }}
       name: k8s-certs
       readOnly: true
@@ -41,6 +44,9 @@ spec:
       name: kubeconfig
       readOnly: true
   volumes:
+  - hostPath:
+       path: /etc/localtime
+    name: host-time
   - hostPath:
       path: {{ kubernetes_pki }}
       type: DirectoryOrCreate

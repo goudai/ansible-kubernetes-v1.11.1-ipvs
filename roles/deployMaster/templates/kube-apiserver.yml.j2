@@ -67,6 +67,9 @@ spec:
       requests:
         cpu: 250m
     volumeMounts:
+    - mountPath: /etc/localtime
+      name: host-time
+      readOnly: true
     - mountPath: {{ kubernetes_log }}
       name: k8s-audit-log
     - mountPath: {{ kubernetes_pki }}
@@ -85,6 +88,9 @@ spec:
       name: etcd-ca-certs
       readOnly: true
   volumes:
+  - hostPath:
+      path: /etc/localtime
+    name: host_time
   - hostPath:
       path: {{ kubernetes_log }}
       type: DirectoryOrCreate

@@ -69,6 +69,9 @@ spec:
         image: freemanliu/google_containers-metrics-server-amd64:v0.2.1
         imagePullPolicy: Always
         volumeMounts:
+        - mountPath: /etc/localtime
+          name: host-time
+          readOnly: true
         - mountPath: /etc/kubernetes/pki
           name: ca-ssl
         command:
@@ -79,6 +82,9 @@ spec:
         - --requestheader-group-headers=X-Remote-Group
         - --requestheader-extra-headers-prefix=X-Remote-Extra-
       volumes:
+      - hostPath:
+          path: /etc/localtime
+        name: host-time
       - name: ca-ssl
         hostPath:
          path: /etc/kubernetes/pki

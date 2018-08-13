@@ -93,6 +93,9 @@ spec:
         imagePullPolicy: IfNotPresent
         args: [ "-conf", "/etc/coredns/Corefile" ]
         volumeMounts:
+        - name: host-time
+          mountPath: /etc/localtime
+          readOnly: true
         - name: config-volume
           mountPath: /etc/coredns
           readOnly: true
@@ -125,12 +128,15 @@ spec:
           failureThreshold: 5
       dnsPolicy: Default
       volumes:
-        - name: config-volume
-          configMap:
-            name: coredns
-            items:
-            - key: Corefile
-              path: Corefile
+      - hostPath:
+          path: /etc/localtime
+        name: host-time
+      - name: config-volume
+        configMap:
+          name: coredns
+          items:
+          - key: Corefile
+            path: Corefile
 ---
 apiVersion: v1
 kind: Service

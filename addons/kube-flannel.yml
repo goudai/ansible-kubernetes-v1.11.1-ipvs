@@ -124,6 +124,7 @@ spec:
         args:
         - --ip-masq
         - --kube-subnet-mgr
+        - --iface=eth0
         resources:
           requests:
             cpu: "100m"
@@ -143,11 +144,17 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         volumeMounts:
+        - name: host-time
+          mountPath: /etc/localtime
+          readOnly: true
         - name: run
           mountPath: /run
         - name: flannel-cfg
           mountPath: /etc/kube-flannel/
       volumes:
+      - name: host-time
+        hostPath:
+          path: /etc/localtime
       - name: run
         hostPath:
           path: /run
