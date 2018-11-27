@@ -17,16 +17,16 @@ ClusterDns: '10.0.0.2'
 ServiceNodePortRange: 30000-32767
 ETCD_PORT: '2379'
 ETCD_PEER_PORT: '2380'
-# svc 网络 开始ip-> 10.8.0.1 结束ip <-10.15.255.254 一共524286ip
+# pod 开始ip-> 10.8.0.1 结束ip <-10.15.255.254 一共524286ip
 ClusterCidr: '10.8.0.0/13'
 
 images_path: /root/images
 # AutoSsh: /usr/local/bin/AutoSsh
 # AutoScp: /usr/local/bin/AutoScp
 
-imageRepository: freemanliu
-imageVersion: v1.11.2
-etcdVersion: 3.2.18
+imageRepository: mirrorgooglecontainers
+imageVersion: v1.12.3
+etcdVersion: 3.2.24-1
 kubelet_path: /usr/local/bin
 kubectl_path: /usr/local/bin
 kubernetes_path: /etc/kubernetes
@@ -40,7 +40,7 @@ ca_certs_path: /etc/ssl/certs
 haproxy_path: /etc/haproxy
 
 cni_path: /opt/cni/bin
-cni_tar: cni-plugins-amd64-v0.6.0.tgz
+cni_tar: cni-plugins-amd64-v0.7.4.tgz
 calicoctl_path: /usr/local/bin
 
 cfssl_path: /usr/local/bin
