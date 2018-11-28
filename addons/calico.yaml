@@ -456,6 +456,9 @@ spec:
             # Mount in the etcd TLS secrets.
             - mountPath: /calico-secrets
               name: etcd-certs
+            - mountPath: /etc/etcd/ssl
+              name: etcd-ca-certs
+              readOnly: true
           readinessProbe:
             exec:
               command:
@@ -468,7 +471,10 @@ spec:
           secret:
             secretName: calico-etcd-secrets
             defaultMode: 0400
-
+        - hostPath:
+            path: /etc/etcd/ssl
+            type: DirectoryOrCreate
+          name: etcd-ca-certs
 ---
 
 apiVersion: v1
