@@ -25,7 +25,7 @@ images_path: /root/images
 # AutoScp: /usr/local/bin/AutoScp
 
 imageRepository: mirrorgooglecontainers
-imageVersion: v1.11.1
+imageVersion: v1.12.3
 etcdVersion: 3.2.24-1
 kubelet_path: /usr/local/bin
 kubectl_path: /usr/local/bin
