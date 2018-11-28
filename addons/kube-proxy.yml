@@ -37,7 +37,7 @@ data:
       burst: 10
       contentType: application/vnd.kubernetes.protobuf
       kubeconfig: /var/lib/kube-proxy/kubeconfig.conf
-      qps: 500
+      qps: 5
     clusterCIDR: '10.0.0.0/13'
     configSyncPeriod: 15m0s
     conntrack:
@@ -87,7 +87,7 @@ data:
       user:
         tokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
 ---
-apiVersion: apps/v1
+apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
   labels:
