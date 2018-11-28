@@ -10,6 +10,8 @@ docker pull coredns/coredns:1.2.6
 docker pull mirrorgooglecontainers/kube-proxy-amd64:v1.12.3
 docker pull mirrorgooglecontainers/metrics-server-amd64:v0.3.1
 docker pull mirrorgooglecontainers/pause-amd64:3.1
+
+systemctl stop kubelet && docker rm $(docker ps -qa) -f && rm -rf /var/lib/etcd/
 ```
 docker run -it --name tmp --rm docker.io/freemanliu/kube sleep 100
 docker cp tmp:/opt/kubernetes-server-linux-amd64.tar.gz .
