@@ -106,11 +106,11 @@ data:
         {
           "type": "calico",
           "log_level": "info",
-          "etcd_endpoints": "__ETCD_ENDPOINTS__",
-          "etcd_key_file": "__ETCD_KEY_FILE__",
-          "etcd_cert_file": "__ETCD_CERT_FILE__",
-          "etcd_ca_cert_file": "__ETCD_CA_CERT_FILE__",
-          "mtu": __CNI_MTU__,
+          "etcd_endpoints": "https://192.168.0.101:2379,https://192.168.0.102:2379,https://192.168.0.103:2379",
+          "etcd_key_file": "/etc/etcd/ssl/etcd-ca.pem",
+          "etcd_cert_file": "/etc/etcd/ssl/etcd.pem",
+          "etcd_ca_cert_file": "/etc/etcd/ssl/etcd-key.pem",
+          "mtu": 1440,
           "ipam": {
               "type": "calico-ipam"
           },
