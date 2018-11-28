@@ -13,7 +13,7 @@ spec:
   containers:
   - name: etcd
 # gcr.io/google_containers
-    image: freemanliu/etcd:{{ etcdVersion }}
+    image: mirrorgooglecontainers/etcd-amd64:{{ etcdVersion }}
     command:
     - etcd
     - --config-file={{ etcd_path }}/etcd.config.yml
