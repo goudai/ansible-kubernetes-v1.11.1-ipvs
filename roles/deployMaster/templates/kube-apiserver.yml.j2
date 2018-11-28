@@ -90,7 +90,7 @@ spec:
   volumes:
   - hostPath:
       path: /etc/localtime
-    name: host_time
+    name: host-time
   - hostPath:
       path: {{ kubernetes_log }}
       type: DirectoryOrCreate
