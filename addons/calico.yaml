@@ -87,9 +87,9 @@ data:
 
   # If you're using TLS enabled etcd uncomment the following.
   # You must also populate the Secret below with these files.
-  etcd_ca: "/etc/etcd/ssl/etcd-ca.pem"   # "/calico-secrets/etcd-ca"
-  etcd_cert: "/etc/etcd/ssl/etcd.pem" # "/calico-secrets/etcd-cert"
-  etcd_key: "/etc/etcd/ssl/etcd-key.pem"  # "/calico-secrets/etcd-key"
+  etcd_ca: "/etc/etcd/ssl/etcd-ca.pem"   # "/etc/etcd/ssl/etcd-ca"
+  etcd_cert: "/etc/etcd/ssl/etcd.pem" # "/etc/etcd/ssl/etcd-cert"
+  etcd_key: "/etc/etcd/ssl/etcd-key.pem"  # "/etc/etcd/ssl/etcd-key"
   # Configure the Calico backend to use.
   calico_backend: "bird"
 
@@ -305,7 +305,7 @@ spec:
             - mountPath: /var/lib/calico
               name: var-lib-calico
               readOnly: false
-            - mountPath: /calico-secrets
+            - mountPath: /etc/etcd/ssl
               name: etcd-certs
         # This container installs the Calico CNI binaries
         # and CNI network config file on each node.
@@ -339,11 +339,8 @@ spec:
               name: cni-bin-dir
             - mountPath: /host/etc/cni/net.d
               name: cni-net-dir
-            - mountPath: /calico-secrets
-              name: etcd-certs
             - mountPath: /etc/etcd/ssl
-              name: etcd-ca-certs
-              readOnly: true
+              name: etcd-certs
       volumes:
         # Used by calico/node.
         - name: lib-modules
@@ -366,16 +363,12 @@ spec:
         - name: cni-net-dir
           hostPath:
             path: /etc/cni/net.d
-        - hostPath:
-            path: /etc/etcd/ssl
-            type: DirectoryOrCreate
-          name: etcd-ca-certs
         # Mount in the etcd TLS secrets with mode 400.
         # See https://kubernetes.io/docs/concepts/configuration/secret/
         - name: etcd-certs
-          secret:
-            secretName: calico-etcd-secrets
-            defaultMode: 0400
+          hostPath:
+            path: /etc/etcd/ssl
+            type: DirectoryOrCreate
 ---
 
 apiVersion: v1
@@ -454,11 +447,8 @@ spec:
               value: policy,namespace,serviceaccount,workloadendpoint,node
           volumeMounts:
             # Mount in the etcd TLS secrets.
-            - mountPath: /calico-secrets
-              name: etcd-certs
             - mountPath: /etc/etcd/ssl
-              name: etcd-ca-certs
-              readOnly: true
+              name: etcd-certs
           readinessProbe:
             exec:
               command:
@@ -468,13 +458,10 @@ spec:
         # Mount in the etcd TLS secrets with mode 400.
         # See https://kubernetes.io/docs/concepts/configuration/secret/
         - name: etcd-certs
-          secret:
-            secretName: calico-etcd-secrets
-            defaultMode: 0400
-        - hostPath:
+          hostPath:
             path: /etc/etcd/ssl
             type: DirectoryOrCreate
-          name: etcd-ca-certs
+
 ---
 
 apiVersion: v1
