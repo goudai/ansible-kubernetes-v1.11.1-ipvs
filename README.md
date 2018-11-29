@@ -15,7 +15,9 @@ systemctl stop kubelet && docker rm $(docker ps -qa) -f && rm -rf /var/lib/etcd/
 ```
 docker run -it --name tmp  docker.io/freemanliu/kube sleep 1 & 
 docker cp tmp:/opt/kubernetes-server-linux-amd64.tar.gz .
-tar -zxvf kubernetes-server-linux-amd64.tar.gz  --strip-components=3 -C /usr/local/bin kubernetes/server/bin/kube{let,ctl,-apiserver,-controller-manager,-scheduler,-proxy}
+tar -zxvf kubernetes-server-linux-amd64.tar.gz  --strip-components=3 -C ./ kubernetes/server/bin/kube{let,ctl}
+cp ./kube{let,ctl} roles/scp/files/
+
 使用指南: https://www.qingmu.io/2018/07/31/Kubernetes-v1-11-1-ansible/
 
 https://www.linuxidc.com/Linux/2016-01/127612.htm

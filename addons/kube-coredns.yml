@@ -45,8 +45,6 @@ metadata:
   name: coredns
   namespace: kube-system
 data:
-  upstreamNameservers: |
-    ["114.114.114.114"]
   Corefile: |
     .:53 {
         errors
