@@ -13,10 +13,8 @@ docker pull mirrorgooglecontainers/pause-amd64:3.1
 
 systemctl stop kubelet && docker rm $(docker ps -qa) -f && rm -rf /var/lib/etcd/ && rm -rf /etc/kubernetes/ && rm -rf  /etc/etcd/ && rm -rf /etc/haproxy/
 ```
-docker run -it --name tmp  docker.io/freemanliu/kube sleep 1 & 
-docker cp tmp:/opt/kubernetes-server-linux-amd64.tar.gz .
-tar -zxvf kubernetes-server-linux-amd64.tar.gz  --strip-components=3 -C ./ kubernetes/server/bin/kube{let,ctl}
-cp ./kube{let,ctl} roles/scp/files/
+docker run -it --name tmp  docker.io/freemanliu/kube sleep 1 
+docker cp tmp:/opt/kubernetes-server-linux-amd64.tar.gz . && tar -zxvf kubernetes-server-linux-amd64.tar.gz  --strip-components=3 -C ./ kubernetes/server/bin/kube{let,ctl} && mv ./kube{let,ctl} roles/scp/files/
 
 使用指南: https://www.qingmu.io/2018/07/31/Kubernetes-v1-11-1-ansible/
 
