@@ -19,7 +19,7 @@ spec:
       - --v=2
       - --logtostderr=true
       - --horizontal-pod-autoscaler-use-rest-clients=true
-      - --address=127.0.0.1
+      - --bind-address=127.0.0.1
       - --root-ca-file={{ kubernetes_pki }}/{{ ca }}.pem
       - --cluster-signing-cert-file={{ kubernetes_pki }}/{{ ca }}.pem
       - --cluster-signing-key-file={{ kubernetes_pki }}/{{ ca }}-key.pem
