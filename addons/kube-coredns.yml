@@ -45,6 +45,8 @@ metadata:
   name: coredns
   namespace: kube-system
 data:
+  upstreamNameservers: |
+    ["114.114.114.114"]
   Corefile: |
     .:53 {
         errors
@@ -70,7 +72,7 @@ metadata:
     k8s-app: kube-dns
     kubernetes.io/name: "CoreDNS"
 spec:
-  replicas: 2
+  replicas: 3
   strategy:
     type: RollingUpdate
     rollingUpdate:
