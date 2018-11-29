@@ -124,14 +124,14 @@ spec:
         args:
         - --ip-masq
         - --kube-subnet-mgr
-        - --iface=eth0
+        - --iface=enp0s3
         resources:
           requests:
             cpu: "100m"
             memory: "50Mi"
           limits:
-            cpu: "100m"
-            memory: "50Mi"
+            cpu: "3000m"
+            memory: "500Mi"
         securityContext:
           privileged: true
         env:
